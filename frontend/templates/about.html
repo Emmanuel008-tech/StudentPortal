@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us — CampusPulse Student Portal{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <!-- Hero-Lite Header -->
+  <section class="page-hero-lite">
+    <div class="container">
+      <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.35rem 0.85rem; border-radius: var(--radius-pill); margin-bottom: 1.25rem;">
+        <span style="font-size: var(--font-size-tiny); font-weight: 600; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.05em;">
+          Institutional Transparency &bull; Established 2026
+        </span>
+      </div>
+      <h1>About CampusPulse</h1>
+      <p class="lead">
+        Fostering academic transparency, student accountability, and connected collegiate life through intuitive digital tools.
+      </p>
+    </div>
+  </section>
+
+  <!-- Mission & Story -->
+  <section class="container" style="padding: 5rem 0 3.5rem;">
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: start;">
+      <div>
+        <span class="section-subtitle" style="color: var(--color-primary); font-weight: 700;">Our Educational Mission</span>
+        <h2 style="font-size: 2.25rem; color: var(--color-primary); margin-bottom: 1.25rem; line-height: 1.2;">
+          Transforming campus administration into a collaborative student partnership.
+        </h2>
+        <p style="font-size: 1.05rem; line-height: 1.7; color: var(--color-text-primary); margin-bottom: 1.5rem;">
+          CampusPulse was designed around a fundamental principle: academic progress should never be obscured by administrative opacity. Students thrive when they have real-time visibility into their course standings, attendance metrics, and degree milestones.
+        </p>
+        <p style="font-size: 1rem; line-height: 1.7; color: var(--color-text-muted); margin-bottom: 2rem;">
+          By bridging the gap between student self-service and faculty oversight, our portal ensures every student is empowered with actionable insight before midterm deadlines or academic standing reviews arise.
+        </p>
+
+        <!-- Institutional Pillars -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+          <div style="background: #FFFFFF; border: 1px solid var(--color-border); border-left: 4px solid var(--color-accent-attendance); border-radius: var(--radius-md); padding: 1.25rem;" class="card-lift">
+            <h4 style="color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.35rem;">Real-Time Accountability</h4>
+            <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0;">
+              Zero latency between faculty roll-call and student dashboard updates.
+            </p>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid var(--color-border); border-left: 4px solid var(--color-accent-course); border-radius: var(--radius-md); padding: 1.25rem;" class="card-lift">
+            <h4 style="color: var(--color-primary); font-size: 1.1rem; margin-bottom: 0.35rem;">Autonomous Enrollment</h4>
+            <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0;">
+              Direct curriculum exploration and instantaneous course registration.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Institutional Stats & Standing Standard -->
+      <aside style="display: flex; flex-direction: column; gap: 2rem;">
+        <div style="background: #FFFFFF; padding: 2.25rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle); border: 1px solid var(--color-border); border-top: 5px solid var(--color-primary);">
+          <h3 style="font-size: 1.35rem; color: var(--color-primary); margin-bottom: 1rem;">The 75% Attendance Policy</h3>
+          <p style="font-size: var(--font-size-small); color: var(--color-text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            Under university academic regulations, regular attendance in laboratory and lecture sessions is mandatory for degree certification:
+          </p>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--color-accent-attendance-light); border-radius: var(--radius-sm); border: 1px solid rgba(46, 139, 87, 0.3);">
+              <span style="font-size: var(--font-size-small); font-weight: 600; color: #1C5D39;">&ge; 75.0% Attendance</span>
+              <span class="badge badge-attendance-good">&#10003; Good Standing</span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--color-accent-alert-light); border-radius: var(--radius-sm); border: 1px solid rgba(196, 72, 60, 0.3);">
+              <span style="font-size: var(--font-size-small); font-weight: 600; color: #8B2820;">&lt; 75.0% Attendance</span>
+              <span class="badge badge-attendance-alert">&#9888; Standing Alert</span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--color-bg); border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+              <span style="font-size: var(--font-size-small); font-weight: 600; color: var(--color-text-muted);">0 Recorded Sessions</span>
+              <span class="badge badge-neutral">&#9679; No sessions yet</span>
+            </div>
+          </div>
+
+          <p style="font-size: var(--font-size-tiny); color: var(--color-text-muted); line-height: 1.5; margin-bottom: 0;">
+            Students whose attendance falls into alert status are notified immediately and offered remedial advising through their academic counselors.
+          </p>
+        </div>
+
+        <!-- Campus Metrics Card -->
+        <div style="background: linear-gradient(135deg, #1C2B4A 0%, #101B33 100%); color: #FFFFFF; padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle);">
+          <div style="font-size: var(--font-size-tiny); text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); margin-bottom: 0.75rem;">
+            Campus Ecosystem Snapshot
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div>
+              <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800;">{{ total_students|default:"450+" }}</div>
+              <div style="font-size: var(--font-size-tiny); color: rgba(255,255,255,0.75);">Enrolled Students</div>
+            </div>
+            <div>
+              <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800;">{{ total_courses|default:"24" }}</div>
+              <div style="font-size: var(--font-size-tiny); color: rgba(255,255,255,0.75);">Active Courses</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Academic Departments & Governance -->
+  <section style="background: #FFFFFF; padding: 5rem 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Academic Divisions</span>
+        <h2 class="section-title">Governing departments &amp; faculty</h2>
+        <p class="lead">Curricula managed by accredited university department faculties.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem;">
+        <div class="about-box">
+          <span class="badge badge-course" style="margin-bottom: 0.75rem;">Department of CS</span>
+          <h3>Computer Science</h3>
+          <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-top: 0.5rem;">
+            Focused on algorithmic problem solving, software engineering architectures, and systems programming.
+          </p>
+        </div>
+
+        <div class="about-box">
+          <span class="badge badge-course" style="margin-bottom: 0.75rem;">Department of DS</span>
+          <h3>Data Science &amp; AI</h3>
+          <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-top: 0.5rem;">
+            Covering statistical machine learning, big data pipelines, and quantitative decision science.
+          </p>
+        </div>
+
+        <div class="about-box">
+          <span class="badge badge-course" style="margin-bottom: 0.75rem;">Department of Security</span>
+          <h3>Cybersecurity</h3>
+          <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-top: 0.5rem;">
+            Defensive engineering, network threat analysis, ethical hacking, and cryptographic protocols.
+          </p>
+        </div>
+
+        <div class="about-box">
+          <span class="badge badge-course" style="margin-bottom: 0.75rem;">Department of Design</span>
+          <h3>Human-Centered Design</h3>
+          <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-top: 0.5rem;">
+            Interaction design systems, user ergonomics, accessibility standards, and web usability.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="container" style="padding: 4rem 0;">
+    <div class="cta-banner-section" style="margin: 0;">
+      <h2>Ready to experience transparent academic tracking?</h2>
+      <p>Log in with your university credentials or register a new verified student profile today.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'accounts:register' %}" class="btn btn-hero-primary">
+          Register Student Account &rarr;
+        </a>
+        <a href="{% url 'contact' %}" class="btn btn-hero-secondary">
+          Contact Academic Advisors
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

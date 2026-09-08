@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CampusPulse — The energetic, modern full-stack student portal for course management, real-time attendance analytics, and academic life.">
+  <title>{% block title %}CampusPulse | Student Portal{% endblock %}</title>
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Base Design System CSS -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- System Flash Messages Banner -->
+  {% if messages %}
+    <div class="messages-container" role="alert" aria-live="polite">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">
+          <span>{{ message }}</span>
+          <button type="button" class="alert-close-btn" aria-label="Dismiss alert">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Global Sticky Navigation Header -->
+  {% block nav %}
+  <header class="site-header">
+    <div class="container">
+      <nav class="site-nav">
+        <a href="{% url 'landing' %}" class="nav-brand">
+          <div class="brand-icon">P</div>
+          <span class="brand-name">CampusPulse</span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="{% url 'landing' %}" class="{% if request.resolver_match.url_name == 'landing' %}active{% endif %}">Home</a></li>
+          <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
+          <li><a href="{% url 'features' %}" class="{% if request.resolver_match.url_name == 'features' %}active{% endif %}">Features</a></li>
+          <li><a href="{% url 'academics:course_list' %}" class="{% if 'course' in request.resolver_match.url_name %}active{% endif %}">Courses</a></li>
+          <li><a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          {% if request.user.is_authenticated %}
+            {% if request.user.is_staff %}
+              <a href="{% url 'staff_dashboard' %}" class="btn btn-secondary btn-sm">Staff Console &rarr;</a>
+            {% endif %}
+            <a href="{% url 'dashboard:dashboard' %}" class="btn btn-primary btn-sm">My Dashboard &rarr;</a>
+            <a href="{% url 'accounts:logout' %}" class="btn btn-secondary btn-sm">Sign Out</a>
+          {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm">Sign In</a>
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">Register</a>
+          {% endif %}
+        </div>
+      </nav>
+    </div>
+  </header>
+  {% endblock %}
+
+  <!-- Main View Block -->
+  {% block content %}{% endblock %}
+
+  <!-- Global Footer -->
+  {% block footer %}
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="brand-name">CampusPulse</span>
+          <p>
+            Empowering students and faculty with modern, transparent academic tools, seamless attendance tracking, and verified records.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Portal Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'landing' %}">Home</a></li>
+            <li><a href="{% url 'about' %}">About CampusPulse</a></li>
+            <li><a href="{% url 'features' %}">Features Overview</a></li>
+            <li><a href="{% url 'academics:course_list' %}">Course Catalog</a></li>
+            <li><a href="{% url 'contact' %}">Contact Registrar</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Student Account</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'accounts:login' %}">Student Sign In</a></li>
+            <li><a href="{% url 'accounts:register' %}">New Registration</a></li>
+            <li><a href="{% url 'accounts:password_reset' %}">Forgot Password</a></li>
+            <li><a href="{% url 'dashboard:dashboard' %}">Student Dashboard</a></li>
+            <li><a href="{% url 'staff_login' %}" class="staff-login-link">&#128274; Staff Login &rarr;</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Academic Policies</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'about' %}">Attendance Policy (&ge;75%)</a></li>
+            <li><a href="{% url 'about' %}">Academic Standing Review</a></li>
+            <li><a href="{% url 'contact' %}">Dispute Attendance</a></li>
+            <li><a href="/admin/">Django Admin Console</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 CampusPulse Student Portal. Built with Python, Django, and modern web standards.</span>
+        <span>
+          <a href="{% url 'staff_login' %}" style="color: var(--color-accent-course); margin-right: 1.25rem; font-weight: 600;">Faculty &amp; Staff Login</a>
+          WCAG AA Accessible &bull; Designed with Fraunces &amp; Work Sans
+        </span>
+      </div>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <!-- Scripts -->
+  <script src="{% static 'js/validation.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

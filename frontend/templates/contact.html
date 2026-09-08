@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Registrar & Support — CampusPulse Student Portal{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <!-- Hero-Lite Header -->
+  <section class="page-hero-lite">
+    <div class="container">
+      <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.35rem 0.85rem; border-radius: var(--radius-pill); margin-bottom: 1.25rem;">
+        <span style="font-size: var(--font-size-tiny); font-weight: 600; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.05em;">
+          Student Support &bull; Office of the Registrar
+        </span>
+      </div>
+      <h1>Contact Academic Services</h1>
+      <p class="lead">
+        Have questions about courses, attendance disputes, degree compliance, or portal access? Our advising and registrar teams are ready to help.
+      </p>
+    </div>
+  </section>
+
+  <!-- 2-Column Contact Grid -->
+  <section class="container" style="padding: 5rem 0 4rem;">
+    <div style="display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 3.5rem; align-items: start;">
+      <!-- Left Column: Validated Inquiry Form -->
+      <div style="background: #FFFFFF; padding: 2.75rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle); border: 1px solid var(--color-border); border-top: 5px solid var(--color-primary);">
+        <h2 style="font-size: 1.65rem; color: var(--color-primary); margin-bottom: 0.5rem;">Send an Academic Inquiry</h2>
+        <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 2rem;">
+          Inquiries are automatically routed to the corresponding department advisor or registrar specialist.
+        </p>
+
+        <form method="post" action="{% url 'contact' %}" novalidate>
+          {% csrf_token %}
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div class="form-group">
+              <label for="id_name" class="form-label">Full Name *</label>
+              <input type="text" id="id_name" name="name" class="form-input" placeholder="e.g. Alex Morgan" value="{{ submitted_name|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+              <label for="id_email" class="form-label">Campus Email Address *</label>
+              <input type="email" id="id_email" name="email" class="form-input" placeholder="e.g. alex.morgan@campus.edu" value="{{ submitted_email|default:'' }}" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div class="form-group">
+              <label for="id_roll_number" class="form-label">Student Roll No. (Optional)</label>
+              <input type="text" id="id_roll_number" name="roll_number" class="form-input" placeholder="e.g. STU-2026-0042">
+            </div>
+
+            <div class="form-group">
+              <label for="id_subject" class="form-label">Inquiry Subject *</label>
+              <select id="id_subject" name="subject" class="form-select" required>
+                <option value="Attendance Dispute" {% if submitted_subject == 'Attendance Dispute' %}selected{% endif %}>Attendance Dispute / Review</option>
+                <option value="Course Add/Drop Request" {% if submitted_subject == 'Course Add/Drop Request' %}selected{% endif %}>Course Add / Drop Petition</option>
+                <option value="Academic Standing Counseling" {% if submitted_subject == 'Academic Standing Counseling' %}selected{% endif %}>Academic Standing Counseling</option>
+                <option value="Technical Portal Support" {% if submitted_subject == 'Technical Portal Support' %}selected{% endif %}>Technical Portal Support</option>
+                <option value="General Academic Question" {% if submitted_subject == 'General Academic Question' %}selected{% endif %}>General Academic Question</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="id_message" class="form-label">Detailed Message *</label>
+            <textarea id="id_message" name="message" class="form-textarea" rows="5" placeholder="Please describe your inquiry, course code, dates involved, or questions in detail..." required>{{ submitted_message|default:'' }}</textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1rem;">
+            Submit Inquiry &rarr;
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Supporting Campus Information -->
+      <aside style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Office Hours & Physical Location Card -->
+        <div style="background: #FFFFFF; padding: 2.25rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle); border: 1px solid var(--color-border); border-top: 5px solid var(--color-accent-course);">
+          <h3 style="font-size: 1.3rem; color: var(--color-primary); margin-bottom: 1.25rem;">Registrar &amp; Advising Center</h3>
+          
+          <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+              <span style="color: var(--color-accent-course); font-size: 1.2rem;">&#128205;</span>
+              <div>
+                <strong>Physical Campus Location:</strong>
+                <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0; line-height: 1.5;">
+                  University Hall, Suite 300 (Central Quad)<br>
+                  100 University Avenue, Academic Square<br>
+                  Campus City, CA 90210
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+              <span style="color: var(--color-accent-attendance); font-size: 1.2rem;">&#128337;</span>
+              <div>
+                <strong>Walk-In Office Hours:</strong>
+                <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0; line-height: 1.5;">
+                  Monday &ndash; Thursday: 8:30 AM &ndash; 5:00 PM PST<br>
+                  Friday: 9:00 AM &ndash; 3:30 PM PST<br>
+                  Saturday &ndash; Sunday: Closed (Portal Open 24/7)
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+              <span style="color: var(--color-primary); font-size: 1.2rem;">&#9742;</span>
+              <div>
+                <strong>Advising Desk Telephone:</strong>
+                <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0;">
+                  +1 (555) 019-2800 &bull; Ext. 402
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campus Map Placeholder -->
+          <div style="background: linear-gradient(135deg, #EAEFF7 0%, #DFE7F2 100%); border-radius: var(--radius-md); padding: 1.75rem 1.25rem; text-align: center; border: 1px dashed rgba(28, 43, 74, 0.25);">
+            <div style="font-size: 1.75rem; margin-bottom: 0.35rem;">&#127963;</div>
+            <strong style="color: var(--color-primary); display: block; font-size: var(--font-size-small);">Central Campus Map</strong>
+            <span style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">
+              Building #14 &bull; North Quad Lawn Adjacent to Science Complex
+            </span>
+          </div>
+        </div>
+
+        <!-- Emergency Support Card -->
+        <div style="background: linear-gradient(135deg, #1C2B4A 0%, #101B33 100%); color: #FFFFFF; padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle);">
+          <div style="font-size: var(--font-size-tiny); text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">
+            Direct Department Contacts
+          </div>
+          <h4 style="color: #FFFFFF; font-size: 1.15rem; margin-bottom: 1rem;">Official Communication Channels</h4>
+          
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: var(--font-size-small);">
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 0.5rem;">
+              <span>Registrar Records:</span>
+              <strong style="color: #E8B95E;">registrar@campus.edu</strong>
+            </li>
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 0.5rem;">
+              <span>Academic Counseling:</span>
+              <strong style="color: #48B87A;">advising@campus.edu</strong>
+            </li>
+            <li style="display: flex; justify-content: space-between;">
+              <span>Portal Tech Support:</span>
+              <strong style="color: #FFFFFF;">support@campus.edu</strong>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+{% endblock %}
