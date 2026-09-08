@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CampusPulse — Modern Student Academic & Course Portal{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <!-- Course-Centered Hero Section with Staggered Mosaic -->
+  <section class="hero-banner-courses">
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Hero Left: Typography & Institutional CTAs -->
+        <div class="hero-content">
+          <div class="hero-tag">
+            <span class="hero-tag-dot"></span>
+            <span class="hero-tag-text">Fall 2026 Academic Catalog Live</span>
+          </div>
+
+          <h1>Every course, every credit, one clear view.</h1>
+          <p class="hero-lead">
+            CampusPulse connects students with course syllabi, faculty mentorship, and transparent attendance compliance in one unified institutional portal.
+          </p>
+
+          <div class="hero-actions">
+            <a href="{% url 'academics:course_list' %}" class="btn btn-hero-primary">
+              Browse Courses &rarr;
+            </a>
+            {% if user.is_authenticated %}
+              <a href="{% url 'dashboard:dashboard' %}" class="btn btn-hero-secondary">
+                My Student Dashboard
+              </a>
+            {% else %}
+              <a href="{% url 'accounts:login' %}" class="btn btn-hero-secondary">
+                Sign In
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Hero Right: Staggered Course Mosaic -->
+        <div class="hero-mosaic-wrap">
+          <div class="course-mosaic-grid">
+            <!-- Column 1 (Normal Top) -->
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+              {% for course in mosaic_courses|slice:":2" %}
+                <a href="{% url 'academics:course_detail' course.id %}" class="mosaic-card" style="text-decoration: none;">
+                  <div class="mosaic-card-image-wrap">
+                    <img src="{% static 'images/courses/' %}{{ course.image_slug }}" alt="{{ course.name }}" loading="lazy" onerror="this.style.display='none'">
+                    <div class="mosaic-card-badge">
+                      {% include 'academics/includes/subject_icon.html' with course=course %}
+                      <span>{{ course.department }}</span>
+                    </div>
+                    <span class="mosaic-card-credits">{{ course.credits }} Credits</span>
+                  </div>
+                  <div class="mosaic-card-body">
+                    <span class="mosaic-course-code">{{ course.code }}</span>
+                    <h3 class="mosaic-course-name">{{ course.name }}</h3>
+                    <div class="mosaic-course-meta">
+                      <span>{{ course.instructor }}</span>
+                      <span style="color: #E8B95E; font-weight: 600;">Explore &rarr;</span>
+                    </div>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+
+            <!-- Column 2 (Offset Downward for Staggered Rhythm) -->
+            <div class="mosaic-col-offset" style="display: flex; flex-direction: column; gap: 1.25rem;">
+              {% for course in mosaic_courses|slice:"2:4" %}
+                <a href="{% url 'academics:course_detail' course.id %}" class="mosaic-card" style="text-decoration: none;">
+                  <div class="mosaic-card-image-wrap">
+                    <img src="{% static 'images/courses/' %}{{ course.image_slug }}" alt="{{ course.name }}" loading="lazy" onerror="this.style.display='none'">
+                    <div class="mosaic-card-badge">
+                      {% include 'academics/includes/subject_icon.html' with course=course %}
+                      <span>{{ course.department }}</span>
+                    </div>
+                    <span class="mosaic-card-credits">{{ course.credits }} Credits</span>
+                  </div>
+                  <div class="mosaic-card-body">
+                    <span class="mosaic-course-code">{{ course.code }}</span>
+                    <h3 class="mosaic-course-name">{{ course.name }}</h3>
+                    <div class="mosaic-course-meta">
+                      <span>{{ course.instructor }}</span>
+                      <span style="color: #E8B95E; font-weight: 600;">Explore &rarr;</span>
+                    </div>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Band 1: Feature Capabilities (White Surface Band) -->
+  <section class="band-surface">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Academic Intelligence</span>
+        <h2 class="section-title">Designed for modern campus life</h2>
+        <p class="section-lead">
+          Essential tools built around student progress, verified attendance records, and faculty transparency.
+        </p>
+      </div>
+
+      <div class="teaser-grid">
+        <!-- Feature 1: Course Registration & Syllabi -->
+        <article class="feature-card">
+          <div class="feature-icon-wrapper icon-brass">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              <line x1="12" y1="6" x2="12" y2="10"></line>
+              <line x1="10" y1="8" x2="14" y2="8"></line>
+            </svg>
+          </div>
+          <h3>Self-Service Course Registration</h3>
+          <p>
+            Browse institutional offerings, inspect complete weekly course syllabi, verify credit allocations, and enroll seamlessly with instantaneous confirmation.
+          </p>
+          <a href="{% url 'academics:course_list' %}" class="feature-card-link">
+            Explore Course Catalog &rarr;
+          </a>
+        </article>
+
+        <!-- Feature 2: Attendance Compliance -->
+        <article class="feature-card">
+          <div class="feature-icon-wrapper icon-emerald">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <h3>Institutional Attendance Compliance</h3>
+          <p>
+            Real-time percentage calculations against the university 75% threshold with clear visual indicators: deep emerald Good Standing or muted rust alerts.
+          </p>
+          <a href="{% url 'features' %}" class="feature-card-link">
+            Learn About Compliance &rarr;
+          </a>
+        </article>
+
+        <!-- Feature 3: Verified Student Profile -->
+        <article class="feature-card">
+          <div class="feature-icon-wrapper icon-navy">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h3>Verified Student Credentials</h3>
+          <p>
+            Manage your official roll number, academic department, contact coordinates, and registered course history in a single secure, authenticated hub.
+          </p>
+          <a href="{% url 'about' %}" class="feature-card-link">
+            About CampusPulse &rarr;
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Band 2: Asymmetrical Course Spotlight (Off-White Base Band) -->
+  {% if spotlight_course %}
+  <section class="band-base">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Curated Curriculum</span>
+        <h2 class="section-title">Featured courses for Fall 2026</h2>
+        <p class="section-lead">
+          Explore rigorous academic offerings led by distinguished faculty across computing, data science, and design.
+        </p>
+      </div>
+
+      <div class="spotlight-grid">
+        <!-- Spotlight Primary Card (Left, Wide) -->
+        <article class="spotlight-main-card">
+          <div class="spotlight-image-wrap">
+            <img src="{% static 'images/courses/' %}{{ spotlight_course.image_slug }}" alt="{{ spotlight_course.name }}" loading="lazy" onerror="this.style.display='none'">
+            <div class="spotlight-tag-bar">
+              <span class="badge badge-course" style="background: rgba(28, 43, 74, 0.9); color: #FFFFFF; backdrop-filter: blur(6px);">
+                {% include 'academics/includes/subject_icon.html' with course=spotlight_course %}
+                <span style="margin-left: 0.35rem;">{{ spotlight_course.department }}</span>
+              </span>
+              <span class="badge badge-course" style="background: var(--color-accent-course); color: #101B33; font-weight: 700;">
+                {{ spotlight_course.credits }} Academic Credits
+              </span>
+            </div>
+          </div>
+          <div class="spotlight-main-body">
+            <div class="spotlight-dept-line">
+              <span>{{ spotlight_course.code }}</span> &bull; <span>Spotlight Offering</span>
+            </div>
+            <h3>{{ spotlight_course.name }}</h3>
+            <p>{{ spotlight_course.description }}</p>
+
+            <div class="spotlight-footer">
+              <div>
+                <span style="font-size: var(--font-size-tiny); color: var(--color-text-muted); display: block;">Faculty Instructor</span>
+                <strong style="color: var(--color-primary); font-size: var(--font-size-small);">{{ spotlight_course.instructor }}</strong>
+              </div>
+              <a href="{% url 'academics:course_detail' spotlight_course.id %}" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: var(--font-size-small);">
+                View Full Syllabus &rarr;
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Spotlight Stacked Secondary Column (Right) -->
+        <div class="spotlight-stacked-column">
+          {% for course in secondary_courses %}
+            <article class="stacked-course-card">
+              <img src="{% static 'images/courses/' %}{{ course.image_slug }}" alt="{{ course.name }}" class="stacked-course-img" loading="lazy" onerror="this.style.display='none'">
+              <div class="stacked-course-body">
+                <div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                    <span class="stacked-course-code">{{ course.code }}</span>
+                    <span class="badge badge-attendance-good" style="padding: 0.2rem 0.55rem; font-size: 0.72rem;">
+                      {{ course.credits }} Credits
+                    </span>
+                  </div>
+                  <h4 class="stacked-course-name">{{ course.name }}</h4>
+                  <p style="font-size: var(--font-size-tiny); color: var(--color-text-muted); margin: 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ course.description }}
+                  </p>
+                </div>
+                <div class="stacked-course-footer">
+                  <span style="color: var(--color-text-muted);">{{ course.instructor }}</span>
+                  <a href="{% url 'academics:course_detail' course.id %}" style="font-weight: 600; color: var(--color-primary); text-decoration: none;">
+                    View &rarr;
+                  </a>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+
+          <!-- All Courses Banner Link -->
+          <div style="background-color: var(--color-surface); border: 1px dashed var(--color-border); border-radius: var(--radius-md); padding: 1.5rem; text-align: left; display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
+            <div>
+              <strong style="color: var(--color-primary); font-size: var(--font-size-small); display: block;">
+                Looking for another subject?
+              </strong>
+              <span style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">
+                View all {{ total_courses }} departmental offerings with full syllabus descriptions.
+              </span>
+            </div>
+            <a href="{% url 'academics:course_list' %}" class="btn btn-secondary" style="white-space: nowrap; font-size: var(--font-size-small); padding: 0.55rem 1.1rem;">
+              Full Catalog &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Band 3: Closing Call-to-Action (Deep Ink-Navy Band) -->
+  <section class="container">
+    <div class="cta-banner-academic">
+      <div class="cta-banner-content">
+        <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: #E8B95E; font-size: var(--font-size-tiny); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem;">
+          <span style="width: 7px; height: 7px; background-color: var(--color-accent-course); border-radius: 50%;"></span>
+          University Enrollment Open
+        </div>
+        <h2>Ready to manage your academic trajectory?</h2>
+        <p>
+          Join students and faculty experiencing seamless course registrations, transparent syllabus tracking, and verified institutional attendance.
+        </p>
+
+      </div>
+
+      <div class="cta-banner-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard:dashboard' %}" class="btn btn-hero-primary" style="white-space: nowrap;">
+            Open My Dashboard &rarr;
+          </a>
+        {% else %}
+          <a href="{% url 'accounts:register' %}" class="btn btn-hero-primary" style="white-space: nowrap;">
+            Create Student Account &rarr;
+          </a>
+          <a href="{% url 'accounts:login' %}" class="btn btn-hero-secondary" style="white-space: nowrap;">
+            Sign In to Existing Account
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
