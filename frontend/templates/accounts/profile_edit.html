@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile | CampusPulse{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="auth-wrapper">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-header">
+      <h1 class="auth-title">Update Student Profile</h1>
+      <p class="auth-subtitle">Keep your contact details and academic bio current for advisors and professors.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="auth-form">
+      {% csrf_token %}
+
+      <!-- Current Avatar Preview -->
+      <div class="profile-avatar-preview">
+        <div class="avatar-circle">
+          {% if student.profile_photo %}
+            <img src="{{ student.profile_photo.url }}" alt="{{ student.full_name }}">
+          {% else %}
+            <span>{{ student.initials }}</span>
+          {% endif %}
+        </div>
+        <div>
+          <strong style="font-size: var(--font-size-card); display: block; color: var(--color-primary);">{{ student.full_name }}</strong>
+          <span style="font-size: var(--font-size-small); color: var(--color-text-muted);">{{ student.roll_number }} &bull; {{ student.department }}</span>
+        </div>
+      </div>
+
+      <!-- Name Fields (Row) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_first_name" class="form-label">First Name</label>
+          {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label for="id_last_name" class="form-label">Last Name</label>
+          {{ form.last_name }}
+        </div>
+      </div>
+
+      <!-- Email & Phone (Row) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_email" class="form-label">Email Address</label>
+          {{ form.email }}
+        </div>
+        <div class="form-group">
+          <label for="id_phone" class="form-label">Contact Phone</label>
+          {{ form.phone }}
+        </div>
+      </div>
+
+      <!-- Department -->
+      <div class="form-group">
+        <label for="id_department" class="form-label">Department / Major</label>
+        {{ form.department }}
+      </div>
+
+      <!-- Bio -->
+      <div class="form-group">
+        <label for="id_bio" class="form-label">Academic Bio &amp; Interests</label>
+        {{ form.bio }}
+      </div>
+
+      <!-- Profile Photo Upload -->
+      <div class="form-group">
+        <label for="id_profile_photo" class="form-label">Profile Photo (Optional)</label>
+        {{ form.profile_photo }}
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+        <button type="submit" class="btn btn-primary" style="flex: 1; padding: 0.75rem;">
+          Save Profile Changes
+        </button>
+        <a href="{% url 'dashboard:dashboard' %}" class="btn btn-secondary" style="padding: 0.75rem;">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}

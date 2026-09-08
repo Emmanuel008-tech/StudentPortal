@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Faculty & Staff Login | CampusPulse{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <!-- Faculty / Staff Shield Badge -->
+      <div class="auth-brand-badge" style="background-color: var(--color-accent-course-light); color: #8C5704;" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="m9 12 2 2 4-4"></path>
+        </svg>
+      </div>
+      <h1 class="auth-title">Faculty &amp; Staff Login</h1>
+      <p class="auth-subtitle">Administrative authentication for academic faculty, registrars, and campus advisors.</p>
+    </div>
+
+    <form id="staff-login-form" method="post" action="{% url 'accounts:staff_login' %}{% if next %}?next={{ next }}{% endif %}" class="auth-form" novalidate>
+      {% csrf_token %}
+
+      <!-- Staff Username or Email -->
+      <div class="form-group">
+        <label for="id_username" class="form-label">Staff Username or Email</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          {% for error in form.username.errors %}
+            <span class="inline-error">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="id_password" class="form-label">Administrative Password</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+          {% for error in form.password.errors %}
+            <span class="inline-error">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-error" style="margin-bottom: 1rem;">
+          {% for error in form.non_field_errors %}
+            <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary btn-block" style="padding: 0.8rem; margin-top: 0.5rem;">
+        Authenticate as Staff &rarr;
+      </button>
+
+
+
+      <div class="auth-footer-links">
+        Are you an enrolled student?
+        <a href="{% url 'accounts:login' %}">Student Portal Sign In</a>
+      </div>
+      <div style="text-align: center; margin-top: 0.75rem;">
+        <a href="{% url 'landing' %}" style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">&larr; Return to CampusPulse Home</a>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}
