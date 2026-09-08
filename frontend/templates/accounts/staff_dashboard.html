@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Faculty & Staff Console | CampusPulse{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<header class="site-header">
+  <div class="container">
+    <nav class="site-nav">
+      <a href="{% url 'landing' %}" class="nav-brand">
+        <div class="brand-icon" style="background-color: #8C5704;">S</div>
+        <span class="brand-name">CampusPulse <span style="font-size: var(--font-size-tiny); font-weight: 500; color: var(--color-text-muted);">(Staff Console)</span></span>
+      </a>
+
+      <div class="nav-actions">
+        <a href="/admin/" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Open Django Admin &rarr;</a>
+        <a href="{% url 'dashboard:dashboard' %}" class="btn btn-secondary btn-sm">View Student Portal</a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-secondary btn-sm">Sign Out</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="container" style="padding-top: 3rem; padding-bottom: 4rem;">
+  <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+    <span class="section-subtitle" style="color: var(--color-primary);">Faculty &amp; Administration Control Center</span>
+    <h1 style="font-size: 2.25rem; color: var(--color-primary); margin-bottom: 0.5rem;">University Operations Overview</h1>
+    <p class="lead">Manage curriculum records, monitor student attendance compliance, and access administrative models.</p>
+  </div>
+
+  <!-- Operational Metrics -->
+  <section class="metrics-grid" style="margin-bottom: 2.5rem;">
+    <div class="metric-card">
+      <div class="metric-icon-wrap" style="background-color: var(--color-primary-light); color: var(--color-primary);">
+        &#128100;
+      </div>
+      <div>
+        <div class="metric-number">{{ total_students }}</div>
+        <div class="metric-label">Registered Students</div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon-wrap" style="background-color: var(--color-accent-course-light); color: var(--color-accent-course);">
+        &#128218;
+      </div>
+      <div>
+        <div class="metric-number">{{ total_courses }}</div>
+        <div class="metric-label">Active Courses</div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon-wrap" style="background-color: var(--color-accent-attendance-light); color: var(--color-accent-attendance);">
+        &#10003;
+      </div>
+      <div>
+        <div class="metric-number">{{ total_attendance }}</div>
+        <div class="metric-label">Attendance Logs</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Administrative Action Shortcuts -->
+  <section style="background: #FFFFFF; padding: 2.25rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle); border: 1px solid var(--color-border); margin-bottom: 2.5rem;">
+    <h3 style="font-size: 1.25rem; color: var(--color-primary); margin-bottom: 0.75rem;">Administrative Quick Actions</h3>
+    <p style="color: var(--color-text-muted); font-size: var(--font-size-small); margin-bottom: 1.5rem;">
+      Jump directly into dedicated administrative workflows to edit records or submit attendance sheets.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+      <a href="/admin/academics/course/" class="btn btn-secondary" style="justify-content: flex-start; padding: 1rem;" target="_blank" rel="noopener">
+        &#128218; Manage Courses &amp; Syllabi
+      </a>
+      <a href="/admin/academics/attendance/" class="btn btn-secondary" style="justify-content: flex-start; padding: 1rem;" target="_blank" rel="noopener">
+        &#10003; Mark Attendance Records
+      </a>
+      <a href="/admin/accounts/student/" class="btn btn-secondary" style="justify-content: flex-start; padding: 1rem;" target="_blank" rel="noopener">
+        &#128100; Manage Student Profiles
+      </a>
+      <a href="/admin/academics/enrollment/" class="btn btn-secondary" style="justify-content: flex-start; padding: 1rem;" target="_blank" rel="noopener">
+        &#128221; Manage Enrollments
+      </a>
+    </div>
+  </section>
+
+  <!-- Recent Records Grid -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Recent Students -->
+    <div style="background: #FFFFFF; padding: 1.75rem; border-radius: var(--radius-md); box-shadow: var(--shadow-subtle); border: 1px solid var(--color-border);">
+      <h4 style="font-size: 1.15rem; color: var(--color-primary); margin-bottom: 1rem;">Recently Registered Students</h4>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for s in recent_students %}
+          <li style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-border);">
+            <div>
+              <strong>{{ s.full_name }}</strong>
+              <div style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">{{ s.roll_number }} &bull; {{ s.department }}</div>
+            </div>
+            <span class="badge badge-course">{{ s.created_at|date:"M d" }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Active Courses -->
+    <div style="background: #FFFFFF; padding: 1.75rem; border-radius: var(--radius-md); box-shadow: var(--shadow-subtle); border: 1px solid var(--color-border);">
+      <h4 style="font-size: 1.15rem; color: var(--color-primary); margin-bottom: 1rem;">Active Course Offerings</h4>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for c in recent_courses %}
+          <li style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-border);">
+            <div>
+              <strong>{{ c.code }} &bull; {{ c.name }}</strong>
+              <div style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">Instructor: {{ c.instructor }} ({{ c.credits }} Credits)</div>
+            </div>
+            <a href="{% url 'academics:course_detail' c.id %}" class="btn btn-secondary btn-sm">View</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</main>
+{% endblock %}

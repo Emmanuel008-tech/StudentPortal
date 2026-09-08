@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Registration | CampusPulse{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="auth-wrapper">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-header">
+      <!-- Brand Accent Badge -->
+      <div class="auth-brand-badge" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <line x1="20" y1="8" x2="20" y2="14"></line>
+          <line x1="23" y1="11" x2="17" y2="11"></line>
+        </svg>
+      </div>
+      <h1 class="auth-title">Create Student Profile</h1>
+      <p class="auth-subtitle">Join CampusPulse to track course enrollments, attendance percentages, and academic standing.</p>
+    </div>
+
+    <form id="register-form" method="post" action="{% url 'accounts:register' %}" class="auth-form" novalidate>
+      {% csrf_token %}
+
+      <!-- Name Fields (Row) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_first_name" class="form-label">First Name</label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}
+            {% for error in form.first_name.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_last_name" class="form-label">Last Name</label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}
+            {% for error in form.last_name.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Account Username & Campus Email (Row) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_username" class="form-label">Username</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            {% for error in form.username.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_email" class="form-label">Campus Email</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            {% for error in form.email.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Roll Number & Department (Row) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_roll_number" class="form-label">Student Roll Number</label>
+          {{ form.roll_number }}
+          {% if form.roll_number.errors %}
+            {% for error in form.roll_number.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_department" class="form-label">Department</label>
+          {{ form.department }}
+          {% if form.department.errors %}
+            {% for error in form.department.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Phone Number (Optional) -->
+      <div class="form-group">
+        <label for="id_phone" class="form-label">Contact Phone (Optional)</label>
+        {{ form.phone }}
+        {% if form.phone.errors %}
+          {% for error in form.phone.errors %}
+            <span class="inline-error">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- Password & Confirm Password (Row) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_password" class="form-label">Password</label>
+          {{ form.password }}
+          <span class="password-requirements">Minimum 8 characters</span>
+          {% if form.password.errors %}
+            {% for error in form.password.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_confirm_password" class="form-label">Confirm Password</label>
+          {{ form.confirm_password }}
+          {% if form.confirm_password.errors %}
+            {% for error in form.confirm_password.errors %}
+              <span class="inline-error">{{ error }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-error" style="margin-bottom: 1rem;">
+          {% for error in form.non_field_errors %}
+            <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary btn-block" style="padding: 0.85rem; margin-top: 0.75rem;">
+        Complete Registration &rarr;
+      </button>
+
+      <div class="auth-footer-links">
+        Already registered?
+        <a href="{% url 'accounts:login' %}">Sign In to your account</a>
+      </div>
+      <div style="text-align: center; margin-top: 0.75rem;">
+        <a href="{% url 'landing' %}" style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">&larr; Return to CampusPulse Home</a>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}
