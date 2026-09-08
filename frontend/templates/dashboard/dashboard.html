@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | CampusPulse Student Portal{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+  <!-- Left Sidebar (Deep Ink-Navy #1C2B4A) -->
+  <aside id="dashboard-sidebar" class="dashboard-sidebar" aria-label="Student Navigation">
+    <div class="sidebar-header">
+      <div class="brand-icon" style="background: rgba(255,255,255,0.18);">P</div>
+      <span class="sidebar-brand-name">CampusPulse</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#overview" class="sidebar-link active" data-target="overview">
+        <span class="sidebar-icon">&#9635;</span>
+        <span>Overview</span>
+      </a>
+      <a href="#profile" class="sidebar-link" data-target="profile">
+        <span class="sidebar-icon">&#9786;</span>
+        <span>My Profile</span>
+      </a>
+      <a href="#courses" class="sidebar-link" data-target="courses">
+        <span class="sidebar-icon">&#128218;</span>
+        <span>Enrolled Courses</span>
+      </a>
+      <a href="#attendance" class="sidebar-link" data-target="attendance">
+        <span class="sidebar-icon">&#10003;</span>
+        <span>Attendance Records</span>
+      </a>
+      <a href="#available-courses" class="sidebar-link" data-target="available-courses">
+        <span class="sidebar-icon">&#43;</span>
+        <span>Course Catalog</span>
+      </a>
+      {% if user.is_staff %}
+        <a href="/admin/" class="sidebar-link" target="_blank" rel="noopener">
+          <span class="sidebar-icon">&#9881;</span>
+          <span>Django Admin &rarr;</span>
+        </a>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-mini-profile">
+        <div class="mini-avatar">
+          {% if student.profile_photo %}
+            <img src="{{ student.profile_photo.url }}" alt="{{ student.full_name }}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+          {% else %}
+            {{ student.initials }}
+          {% endif %}
+        </div>
+        <div class="mini-info">
+          <span class="mini-name">{{ student.full_name }}</span>
+          <span class="mini-roll">{{ student.roll_number }}</span>
+        </div>
+      </div>
+      <a href="{% url 'accounts:logout' %}" class="btn btn-secondary btn-sm btn-block" style="border-color: rgba(255,255,255,0.25); color: #FFFFFF !important;">
+        Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Area (Pale Mist Background #F4F7FB) -->
+  <div class="dashboard-main">
+    <!-- Topbar -->
+    <header class="dashboard-topbar">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <button id="mobile-drawer-toggle" class="mobile-menu-btn" aria-label="Toggle navigation menu">&#9776;</button>
+        <h1 style="font-size: 1.4rem; color: var(--color-primary); margin: 0;">Student Portal</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 1.25rem;">
+        <span class="topbar-date">Spring Semester &bull; 2026</span>
+        <a href="{% url 'accounts:profile_edit' %}" class="btn btn-secondary btn-sm">Edit Profile</a>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="dashboard-content-body">
+      <!-- 1. Top Profile Summary Card -->
+      <section id="profile" class="profile-card">
+        <div class="profile-identity">
+          <div class="profile-avatar-large">
+            {% if student.profile_photo %}
+              <img src="{{ student.profile_photo.url }}" alt="{{ student.full_name }}">
+            {% else %}
+              <span>{{ student.initials }}</span>
+            {% endif %}
+          </div>
+          <div class="profile-meta">
+            <h2>{{ student.full_name }}</h2>
+            <div class="profile-details-pills">
+              <span><strong>Roll No:</strong> {{ student.roll_number }}</span>
+              <span>&bull;</span>
+              <span><strong>Dept:</strong> {{ student.department }}</span>
+              <span>&bull;</span>
+              <span><strong>Email:</strong> {{ student.email }}</span>
+              {% if student.phone %}
+                <span>&bull;</span>
+                <span><strong>Phone:</strong> {{ student.phone }}</span>
+              {% endif %}
+            </div>
+            {% if student.bio %}
+              <p class="profile-bio">{{ student.bio }}</p>
+            {% else %}
+              <p class="profile-bio" style="font-style: italic;">No bio added yet. Click "Edit Profile" to tell your advisors and professors about your academic interests.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <a href="{% url 'accounts:profile_edit' %}" class="btn btn-secondary btn-sm">
+            &#9998; Edit Profile
+          </a>
+        </div>
+      </section>
+
+      <!-- 2. Academic Stats Metric Cards -->
+      <section id="overview" class="metrics-grid">
+        <!-- Metric 1: Enrolled Courses -->
+        <div class="metric-card">
+          <div class="metric-icon-wrap" style="background-color: var(--color-accent-course-light); color: var(--color-accent-course);">
+            &#128218;
+          </div>
+          <div>
+            <div class="metric-number">{{ enrolled_count }}</div>
+            <div class="metric-label">Enrolled Courses</div>
+          </div>
+        </div>
+
+        <!-- Metric 2: Overall Attendance % -->
+        <div class="metric-card">
+          <div class="metric-icon-wrap" style="background-color: {% if is_overall_good %}var(--color-accent-attendance-light){% else %}var(--color-accent-alert-light){% endif %}; color: {% if is_overall_good %}var(--color-accent-attendance){% else %}var(--color-accent-alert){% endif %};">
+            &#10003;
+          </div>
+          <div>
+            {% if has_overall_records %}
+              <div class="metric-number">{{ overall_attendance_pct }}%</div>
+              <div class="metric-label">
+                Overall Attendance
+                {% if is_overall_good %}
+                  <span class="badge badge-attendance-good" style="margin-left: 0.35rem;">Good Standing</span>
+                {% else %}
+                  <span class="badge badge-attendance-alert" style="margin-left: 0.35rem;">Alert (&lt;75%)</span>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="metric-number">—</div>
+              <div class="metric-label">
+                Overall Attendance
+                <span class="badge badge-neutral" style="margin-left: 0.35rem;">No sessions yet</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Metric 3: Total Credits -->
+        <div class="metric-card">
+          <div class="metric-icon-wrap" style="background-color: var(--color-primary-light); color: var(--color-primary);">
+            &#9733;
+          </div>
+          <div>
+            <div class="metric-number">{{ total_credits }}</div>
+            <div class="metric-label">Active Term Credits</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Enrolled Courses Section (Marigold Chips & Cards) -->
+      <section id="courses">
+        <div class="dashboard-section-header">
+          <div>
+            <h3>Enrolled Courses</h3>
+            <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0;">
+              Your current active curriculum with syllabus details and assigned instructors.
+            </p>
+          </div>
+          <a href="#available-courses" class="btn btn-secondary btn-sm">&#43; Add Course</a>
+        </div>
+
+        {% if courses_data %}
+          <div class="courses-grid">
+            {% for item in courses_data %}
+              <article class="course-card">
+                <div>
+                  <div class="course-header">
+                    <!-- Marigold Accented Course Code Chip -->
+                    <span class="course-code-chip">{{ item.course.code }}</span>
+                    <span class="course-credits">{{ item.course.credits }} Credits</span>
+                  </div>
+                  <h4 class="course-title">{{ item.course.name }}</h4>
+                  <div class="course-instructor">Instructor: <strong>{{ item.course.instructor }}</strong></div>
+                  <p class="course-desc-brief">{{ item.course.description }}</p>
+                </div>
+
+                <div class="course-footer">
+                  <div>
+                    <!-- Functional Attendance Badge per course -->
+                    {% if not item.has_records %}
+                      <span class="badge badge-neutral">
+                        &#9679; No sessions yet
+                      </span>
+                    {% elif item.is_good_standing %}
+                      <span class="badge badge-attendance-good">
+                        &#10003; {{ item.percentage }}% Present
+                      </span>
+                    {% else %}
+                      <span class="badge badge-attendance-alert">
+                        &#9888; {{ item.percentage }}% Alert
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="{% url 'academics:course_detail' item.course.id %}" class="btn btn-secondary btn-sm">Syllabus</a>
+                    <form method="post" action="{% url 'academics:course_drop' item.course.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to drop course {{ item.course.code }}?');">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-secondary btn-sm" style="color: var(--color-accent-alert) !important;">Drop</button>
+                    </form>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="background: #FFFFFF; padding: 2.5rem; border-radius: var(--radius-md); text-align: center; border: 1px dashed var(--color-border); margin-bottom: 2rem;">
+            <p style="color: var(--color-text-muted);">You are not enrolled in any courses yet.</p>
+            <a href="#available-courses" class="btn btn-primary btn-sm">Browse Course Catalog &rarr;</a>
+          </div>
+        {% endif %}
+      </section>
+
+      <!-- 4. Attendance Summary Breakdown Table -->
+      <section id="attendance">
+        <div class="dashboard-section-header">
+          <div>
+            <h3>Attendance Breakdown</h3>
+            <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0;">
+              Real-time attendance percentages. A minimum of 75% present attendance is required for good standing.
+            </p>
+          </div>
+        </div>
+
+        <div class="attendance-summary-card">
+          {% if courses_data %}
+            <div class="table-responsive">
+              <table class="campus-table" aria-label="Course Attendance Summary">
+                <thead>
+                  <tr>
+                    <th>Course</th>
+                    <th>Instructor</th>
+                    <th>Total Sessions</th>
+                    <th>Present / Attended</th>
+                    <th>Absent</th>
+                    <th>Attendance %</th>
+                    <th>Standing Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in courses_data %}
+                    <tr>
+                      <td>
+                        <strong>{{ item.course.code }}</strong>
+                        <div style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">{{ item.course.name }}</div>
+                      </td>
+                      <td>{{ item.course.instructor }}</td>
+                      <td>{{ item.total_sessions }} sessions</td>
+                      <td>{{ item.attended_count }} ({% if item.late_count %}{{ item.present_count }} on-time, {{ item.late_count }} late{% else %}{{ item.present_count }}{% endif %})</td>
+                      <td>
+                        {% if item.absent_count > 0 %}
+                          <span style="color: var(--color-accent-alert); font-weight: 600;">{{ item.absent_count }}</span>
+                        {% else %}
+                          0
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if item.has_records %}
+                          <!-- Visual Progress Bar -->
+                          <div class="attendance-bar-wrap">
+                            <div class="attendance-bar-fill {% if item.is_good_standing %}fill-good{% else %}fill-alert{% endif %}" style="width: {{ item.percentage }}%;"></div>
+                          </div>
+                          <strong>{{ item.percentage }}%</strong>
+                        {% else %}
+                          <span style="color: var(--color-text-muted);">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <!-- Functional Color Status Badge -->
+                        {% if not item.has_records %}
+                          <span class="badge badge-neutral">&#9679; No sessions yet</span>
+                        {% elif item.is_good_standing %}
+                          <span class="badge badge-attendance-good">&#10003; Good Standing</span>
+                        {% else %}
+                          <span class="badge badge-attendance-alert">&#9888; Attendance Alert (&lt;75%)</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p style="color: var(--color-text-muted); text-align: center; margin: 1rem 0;">No attendance records available.</p>
+          {% endif %}
+        </div>
+      </section>
+
+      <!-- 5. Recent Attendance Log -->
+      {% if recent_attendance %}
+      <section style="margin-bottom: 2.5rem;">
+        <div class="dashboard-section-header">
+          <div>
+            <h4 style="font-size: 1.15rem;">Recent Attendance Log</h4>
+            <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0;">
+              Latest lecture check-ins recorded by course faculty.
+            </p>
+          </div>
+        </div>
+
+        <div class="attendance-summary-card">
+          <div class="table-responsive">
+            <table class="campus-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Course</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for record in recent_attendance %}
+                  <tr>
+                    <td>{{ record.date|date:"M d, Y" }}</td>
+                    <td><strong>{{ record.course.code }}</strong> &bull; {{ record.course.name }}</td>
+                    <td>
+                      {% if record.status == 'present' %}
+                        <span class="badge badge-attendance-good">Present</span>
+                      {% elif record.status == 'late' %}
+                        <span class="badge badge-course">Late Arrival</span>
+                      {% else %}
+                        <span class="badge badge-attendance-alert">Absent</span>
+                      {% endif %}
+                    </td>
+                    <td style="color: var(--color-text-muted); font-size: var(--font-size-tiny);">
+                      {{ record.remarks|default:"Lecture Session" }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- 6. Available Courses Catalog to Enroll -->
+      <section id="available-courses">
+        <div class="dashboard-section-header">
+          <div>
+            <h3>Course Catalog &amp; Enrollment</h3>
+            <p style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-bottom: 0;">
+              Expand your semester curriculum with available campus courses.
+            </p>
+          </div>
+        </div>
+
+        {% if available_courses %}
+          <div class="courses-grid">
+            {% for course in available_courses %}
+              <article class="course-card" style="border-top-color: var(--color-primary);">
+                <div>
+                  <div class="course-header">
+                    <span class="badge badge-course">{{ course.code }}</span>
+                    <span class="course-credits">{{ course.credits }} Credits</span>
+                  </div>
+                  <h4 class="course-title">{{ course.name }}</h4>
+                  <div class="course-instructor">Instructor: <strong>{{ course.instructor }}</strong></div>
+                  <p class="course-desc-brief">{{ course.description }}</p>
+                </div>
+
+                <div class="course-footer">
+                  <span style="font-size: var(--font-size-tiny); color: var(--color-text-muted);">Department: {{ course.department }}</span>
+                  <form method="post" action="{% url 'academics:course_enroll' course.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      &#43; Enroll Now
+                    </button>
+                  </form>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="background: #FFFFFF; padding: 2rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--color-border);">
+            <p style="color: var(--color-text-muted); margin-bottom: 0;">You are currently enrolled in all available courses for this term!</p>
+          </div>
+        {% endif %}
+      </section>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Course Catalog — Academic Curriculum | CampusPulse{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <!-- Header Bar -->
+  <section class="catalog-header-bar">
+    <div class="container">
+      <div class="catalog-header-grid">
+        <div class="section-header" style="margin-bottom: 0;">
+          <span class="section-subtitle">Institutional Offerings</span>
+          <h1 class="section-title">University Course Catalog</h1>
+          <p class="section-lead">
+            Explore departmental curricula, inspect faculty-guided syllabi, and manage your semester schedule.
+          </p>
+        </div>
+
+        <div class="catalog-stats-pills">
+          <div class="stat-pill">
+            <span>Term:</span>
+            <strong>Fall 2026</strong>
+          </div>
+          <div class="stat-pill">
+            <span>Available:</span>
+            <strong>{{ total_catalog_count }} Courses</strong>
+          </div>
+          <div class="stat-pill">
+            <span>Curriculum Weight:</span>
+            <strong>{{ total_credits_sum }} Credits</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Department Filter Tabs Bar -->
+  <section class="dept-filter-bar">
+    <div class="container">
+      <nav class="dept-tabs" aria-label="Department Filter">
+        <a href="{% url 'academics:course_list' %}" class="dept-tab {% if not selected_dept or selected_dept == 'all' %}active{% endif %}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          All Departments ({{ total_catalog_count }})
+        </a>
+
+        {% for dept in departments %}
+          <a href="?dept={{ dept|urlencode }}" class="dept-tab {% if selected_dept == dept %}active{% endif %}">
+            {% include 'academics/includes/subject_icon.html' with dept=dept %}
+            {{ dept }}
+          </a>
+        {% endfor %}
+      </nav>
+    </div>
+  </section>
+
+  <!-- Catalog Grid Section -->
+  <section class="catalog-section">
+    <div class="container">
+      {% if courses %}
+        <div class="catalog-grid">
+          {% for course in courses %}
+            <article class="catalog-card">
+              <!-- Card Media Header with Generated Artwork & Overlay Badges -->
+              <div class="catalog-card-media">
+                <img src="{% static 'images/courses/' %}{{ course.image_slug }}" alt="{{ course.name }}" loading="lazy" onerror="this.style.display='none'">
+                <div class="catalog-media-badge-left">
+                  {% include 'academics/includes/subject_icon.html' with course=course %}
+                  <span>{{ course.department }}</span>
+                </div>
+                <span class="catalog-media-badge-right">{{ course.credits }} Credits</span>
+              </div>
+
+              <!-- Card Body -->
+              <div class="catalog-card-body">
+                <span class="catalog-card-code">{{ course.code }}</span>
+                <h2 class="catalog-card-name">{{ course.name }}</h2>
+                
+                <div class="catalog-card-instructor">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-accent-course);">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <span>Lead Faculty: <strong>{{ course.instructor }}</strong></span>
+                </div>
+
+                <p class="catalog-card-desc">{{ course.description }}</p>
+
+                <!-- Card Footer & Enrollment Actions -->
+                <div class="catalog-card-footer">
+                  {% if course.id in enrolled_course_ids %}
+                    <span class="badge badge-attendance-good">
+                      &#10003; Enrolled
+                    </span>
+                  {% else %}
+                    <span class="badge badge-course" style="background-color: var(--color-accent-course-light); color: var(--color-accent-course); border: 1px solid rgba(200, 147, 43, 0.3);">
+                      Available
+                    </span>
+                  {% endif %}
+
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="{% url 'academics:course_detail' course.id %}" class="btn btn-secondary btn-sm">
+                      Syllabus &rarr;
+                    </a>
+                    {% if user.is_authenticated %}
+                      {% if course.id not in enrolled_course_ids %}
+                        <form method="post" action="{% url 'academics:course_enroll' course.id %}" style="display: inline; margin: 0;">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-primary btn-sm">
+                            Enroll
+                          </button>
+                        </form>
+                      {% endif %}
+                    {% else %}
+                      <a href="{% url 'accounts:login' %}?next={% url 'academics:course_list' %}" class="btn btn-primary btn-sm">
+                        Enroll
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State for filtered department -->
+        <div style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 4rem 2rem; text-align: center; max-width: 580px; margin: 0 auto;">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--color-accent-course);">&#9749;</div>
+          <h3 style="color: var(--color-primary); margin-bottom: 0.5rem;">No Courses Found</h3>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-small); margin-bottom: 1.5rem;">
+            There are currently no active course offerings matching department "<strong>{{ selected_dept }}</strong>".
+          </p>
+          <a href="{% url 'academics:course_list' %}" class="btn btn-primary btn-sm">
+            View All Courses
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}
